@@ -1,5 +1,6 @@
 /**
  * echo client
+ * mainly from http://csapp.cs.cmu.edu/3e/ics3/code/netp/echoclient.c
  */
 
 #include <stdio.h>

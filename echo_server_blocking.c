@@ -1,5 +1,10 @@
 /**
  * a simple blocking echo server
+ * mostly based on:
+ * http://csapp.cs.cmu.edu/3e/ics3/code/src/csapp.c
+ * http://csapp.cs.cmu.edu/3e/ics3/code/netp/echo.c
+ * http://csapp.cs.cmu.edu/3e/ics3/code/netp/echoserveri.c
+ * 
 */
 
 #include <stdio.h>
