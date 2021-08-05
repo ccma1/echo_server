@@ -46,14 +46,13 @@ int main(int argc, char **argv)
         }
         printf("Echo from server: %s\n", buf);
     }
-    close(clientfd); //line:netp:echoclient:close
+    close(clientfd); 
     exit(0);
 }
 
 /*
  * open_clientfd - Open connection to server at <hostname, port> and
- *     return a socket descriptor ready for reading and writing. This
- *     function is reentrant and protocol-independent.
+ *     return a socket descriptor ready for reading and writing.
 */
 int open_clientfd(char *hostname, char *port) {
     int clientfd, rc;
@@ -61,9 +60,9 @@ int open_clientfd(char *hostname, char *port) {
 
     /* Get a list of potential server addresses */
     memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_socktype = SOCK_STREAM;  /* Open a connection */
-    hints.ai_flags = AI_NUMERICSERV;  /* ... using a numeric port arg. */
-    hints.ai_flags |= AI_ADDRCONFIG;  /* Recommended for connections */
+    hints.ai_socktype = SOCK_STREAM;  
+    hints.ai_flags = AI_NUMERICSERV;  
+    hints.ai_flags |= AI_ADDRCONFIG;  
     if ((rc = getaddrinfo(hostname, port, &hints, &listp)) != 0) {
         fprintf(stderr, "getaddrinfo failed (%s:%s): %s\n", hostname, port, gai_strerror(rc));
         return -2;
@@ -78,7 +77,7 @@ int open_clientfd(char *hostname, char *port) {
         /* Connect to the server */
         if (connect(clientfd, p->ai_addr, p->ai_addrlen) != -1) 
             break; /* Success */
-        if (close(clientfd) < 0) { /* Connect failed, try another */  //line:netp:openclientfd:closefd
+        if (close(clientfd) < 0) { /* Connect failed, try another */  
             fprintf(stderr, "open_clientfd: close failed: %s\n", strerror(errno));
             return -1;
         } 
