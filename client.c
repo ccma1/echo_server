@@ -39,10 +39,10 @@ int main(int argc, char **argv)
         if ((n = write(clientfd, buf, strlen(buf))) < 0) {
             fprintf(stderr, "ERROR writing to socket %s\n",strerror(errno));
         }
-        printf("Sent to server %s\n", buf);
+        printf("Sent to server: %s\n", buf);
         //memset(buf, 0, MAXLINE);
         if ((n = read(clientfd, buf, strlen(buf))) < 0) {
-            fprintf(stderr, "ERROR writing to socket %s\n",strerror(errno));
+            fprintf(stderr, "ERROR reading from socket %s\n",strerror(errno));
         }
         printf("Echo from server: %s\n", buf);
     }

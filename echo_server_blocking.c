@@ -40,6 +40,7 @@ int main(int argc, char **argv){
             fprintf(stderr, "accept error: %s\n", strerror(errno));
             exit(-1);
         }
+        printf("connfd in main %d\n", connfd);
         if ((rc = getnameinfo((SA*)&clientaddr, clientlen,client_hostname, MAXLINE, client_port, MAXLINE, 0)) < 0) {
                         fprintf(stderr, "getnameinfo error: %s\n", gai_strerror(rc));
         }
@@ -56,9 +57,10 @@ int main(int argc, char **argv){
 void echo(int connfd) {
     size_t n;
     char buf[MAXLINE];
-    
+    printf("connfd in echo %d\n", connfd);
     while ((n = read(connfd, buf, MAXLINE)) != 0) {
         printf("server received %d bytes \n", (int)n);
+        printf("connfd in echo2 %d\n", connfd);
         write(connfd, buf, n);
     }
     close(connfd);
