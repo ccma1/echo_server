@@ -37,14 +37,14 @@ int main(int argc, char **argv)
     memset(buf, 0, MAXLINE);
 
     while (fgets(buf, MAXLINE, stdin) != NULL) {
-        if ((n = write(clientfd, buf, strlen(buf))) < 0) {
+        if ((n = write(clientfd, buf, strlen(buf))) <= 0) {
             fprintf(stderr, "ERROR writing to socket: %s\n",strerror(errno));
             exit(-1);
         } else {
             printf("n = %d, Sent to server (len %ld): %s\n",n, strlen(buf), buf);
         }
         //memset(buf, 0, MAXLINE);
-        if ((n = read(clientfd, buf, strlen(buf))) < 0) {
+        if ((n = read(clientfd, buf, strlen(buf))) <= 0) {
             fprintf(stderr, "ERROR reading from socket: %s\n",strerror(errno));
             exit(-1);
         } else {

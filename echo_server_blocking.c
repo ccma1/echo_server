@@ -67,6 +67,7 @@ void echo(int connfd) {
         printf("server received %d bytes \n", (int)n);
         //printf("connfd in echo2 %d\n", connfd);
         write(connfd, buf, n);
+        memset(buf, 0, MAXLINE);
     }
     close(connfd);
 }
