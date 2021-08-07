@@ -50,6 +50,7 @@ int main(int argc, char **argv){
                         fprintf(stderr, "getnameinfo error: %s\n", gai_strerror(rc));
         }
         printf("Connected to (%s, %s)\n", client_hostname, client_port);
+        printf("HSAODASOHFIUHA\n");
         echo(connfd);
         close(connfd);
     }
