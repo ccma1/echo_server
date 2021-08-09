@@ -4,31 +4,20 @@
  * http://csapp.cs.cmu.edu/3e/ics3/code/src/csapp.c
  * http://csapp.cs.cmu.edu/3e/ics3/code/netp/echo.c
  * http://csapp.cs.cmu.edu/3e/ics3/code/netp/echoserveri.c
- * 
+ * to compile:
+ * gcc -Wall echo_server.c helpers.c -o echo_server
+ * to run:
+ * ./echo_server <port #>
 */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <error.h>
-#include <errno.h>
+#include "helpers.h"
 
-#include <netdb.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-
-/*constants */
-#define MAXLINE 8194
-#define LISTENQ 1024
-
-//sockaddr def
-typedef struct sockaddr SA; 
-
-//echo 
-void echo(int connfd);
-//returns a listening socket ready to receive conn requests on port
-int open_listenfd(char *port);
+//handler for SIGCHLD
+void sigchld_handler(int sig) {
+    while (waitpid(-1, 0, WNOHANG) > 0)
+        ;
+    return;
+}
 
 int main(int argc, char **argv){
     int listenfd, connfd; //listening and connection file descriptor
@@ -37,87 +26,31 @@ int main(int argc, char **argv){
     char client_hostname[MAXLINE], client_port[MAXLINE];
     int rc;
 
+    Signal(SIGCHLD, sigchld_handler);
     listenfd = open_listenfd(argv[1]);
     while(1) {
         clientlen = sizeof(struct sockaddr_storage);
         //wait for connection request from client on listenfd
-        if ((connfd = accept(listenfd, (SA*)&clientaddr, &clientlen)) < 0) {
-            fprintf(stderr, "accept error: %s\n", strerror(errno));
-            exit(-1);
-        }
-        //printf("connfd in main %d, listenfd is %d\n", connfd, listenfd);
-        if ((rc = getnameinfo((SA*)&clientaddr, clientlen,client_hostname, MAXLINE, client_port, MAXLINE, 0)) < 0) {
+        if ((connfd = accept(listenfd, (SA*)&clientaddr, &clientlen)) < 0) 
+            unix_error("accept error");
+        //get client info
+        if ((rc = getnameinfo((SA*)&clientaddr, clientlen, client_hostname, MAXLINE, client_port, MAXLINE, 0)) < 0) {
                         fprintf(stderr, "getnameinfo error: %s\n", gai_strerror(rc));
+                        exit(-1);
         }
         printf("Connected to (%s, %s)\n", client_hostname, client_port);
-        printf("HSAODASOHFIUHA\n");
-        echo(connfd);
-        close(connfd);
+        //clear hostname and port info
+        memset(client_hostname, 0, MAXLINE);
+        memset(client_port, 0, MAXLINE);
+        if (Fork() == 0) {
+            printf("I am child start %d\n", getpid());
+            Close(listenfd);
+            echo(connfd);
+            printf("I am child out %d\n", getpid());
+            Close(connfd);
+            exit(0);
+        }        
+        Close(connfd);
     }
     exit(0);
 }
-
-/**
- * reads and echoes text from client until client closes connection
- */
-void echo(int connfd) {
-    size_t n;
-    char buf[MAXLINE];
-    //printf("connfd in echo %d\n", connfd);
-    while ((n = read(connfd, buf, MAXLINE)) != 0) {
-        printf("server received %d bytes \n", (int)n);
-        //printf("connfd in echo2 %d\n", connfd);
-        write(connfd, buf, n);
-        memset(buf, 0, MAXLINE);
-    }
-    close(connfd);
-}
-
-/**
- * opens and returns a listening socket on port
- */
-int open_listenfd(char *port) {
-    struct addrinfo hints, *listp, *p;
-    int listenfd, rc, optval=1;
-
-    //gets linked list of addrinfo structs for host and service
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
-    hints.ai_flags |= AI_NUMERICSERV;
-    if ((rc = getaddrinfo(NULL, port, &hints, &listp)) != 0) {
-        fprintf(stderr, "getaddrinfo fails port %s: %s\n", port, gai_strerror(rc));
-        return -2;
-    }
-
-    //walk list for a socket that can be binded to
-    for (p = listp; p; p = p->ai_next) {
-        //create socket descriptor
-        if ((listenfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) < 0)
-            continue; //socket failed and try
-        
-        /* Eliminates "Address already in use" error from bind */
-        setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR,    //line:netp:csapp:setsockopt
-                   (const void *)&optval , sizeof(int));
-        
-        //bind the descriptor to the address
-        if (bind(listenfd, p->ai_addr, p->ai_addrlen) == 0)
-            break;
-        if (close(listenfd) < 0) {
-            fprintf(stderr, "open_listenfd close failed: %s\n", strerror(errno));
-            return -1;
-        }
-    }
-
-    //clean up getaddrinfo
-    freeaddrinfo(listp);
-    //if no address worked
-    if (!p) return -1;
-
-    //make p a listening socket ready to accept connection requests
-    if (listen(listenfd, LISTENQ) < 0) {
-        fprintf(stderr, "listen error: %s\n", strerror(errno));
-        return -1;
-    }
-    return listenfd;
-}   
