@@ -9,6 +9,12 @@
 
 #include "helpers.h"
 
+//handler for SIGPIPE
+void sigpipe_handler(int sig) {
+    printf("Server closed\n");
+    fflush(stdout);
+}
+
 int main(int argc, char **argv) 
 {
     int clientfd;
@@ -22,6 +28,9 @@ int main(int argc, char **argv)
     host = argv[1];
     port = argv[2];
 
+    //handling if server closes connection
+    Signal(SIGPIPE, sigpipe_handler);
+
     clientfd = open_clientfd(host, port);
     memset(buf, 0, MAXLINE);
 
@@ -32,14 +41,18 @@ int main(int argc, char **argv)
         } else {
             printf("n = %d, Sent to server (len %ld): %s\n",n, strlen(buf), buf);
         }
+        //write(clientfd, "hello", 6);
         //memset(buf, 0, MAXLINE);
-        if ((n = read(clientfd, buf, strlen(buf))) <= 0) {
+        if ((n = read(clientfd, buf, strlen(buf))) < 0) {
             fprintf(stderr, "ERROR reading from socket: %s\n",strerror(errno));
+            exit(-1);
+        } else if (n == 0) {
+            fprintf(stderr, "Server disconnected\n");
             exit(-1);
         } else {
             printf("Echo from server: %s\n", buf);
         }
     }
-    close(clientfd); 
+    Close(clientfd); 
     exit(0);
 }

@@ -13,7 +13,7 @@ void echo(int connfd) {
         write(connfd, buf, n);
         memset(buf, 0, MAXLINE);
     }
-    //close(connfd);
+    printf("client on process %d disconnected\n", getpid());
 }
 
 
