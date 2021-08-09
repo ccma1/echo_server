@@ -51,7 +51,10 @@ int main(int argc, char **argv){
         }
         printf("Connected to (%s, %s)\n", client_hostname, client_port);
         echo(connfd);
-        close(connfd);
+        if (close(connfd) < 0) {
+            fprintf(stderr, "close error %d\n", errno);
+            exit(0);
+        }
     }
     exit(0);
 }
