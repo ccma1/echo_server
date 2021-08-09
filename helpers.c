@@ -13,7 +13,7 @@ void echo(int connfd) {
         write(connfd, buf, n);
         memset(buf, 0, MAXLINE);
     }
-    close(connfd);
+    //close(connfd);
 }
 
 
@@ -112,7 +112,7 @@ int open_clientfd(char *hostname, char *port) {
 //Misc helpers
 //Unix style error handling to display message
 void unix_error(char *msg) {
-    fprintf(stderr, "%s: %s\n", msg, strerror(errno));
+    fprintf(stderr, "%s:%d: %s\n", msg, errno, strerror(errno));
     exit(-1);
 }
 
