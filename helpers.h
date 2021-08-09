@@ -15,6 +15,8 @@
 #include <signal.h>
 #include <sys/wait.h>
 
+#include <pthread.h>
+
 /*constants */
 #define MAXLINE 8194
 #define LISTENQ 1024
@@ -39,6 +41,9 @@ int open_clientfd(char *hostname, char *port);
 //Unix-style error handling
 void unix_error(char *msg);
 
+//Posix-style error handling
+void posix_error(int code, char *msg);
+
 //fork error handling wrapper
 pid_t Fork(void);
 
@@ -47,5 +52,14 @@ handler_t *Signal(int signum, handler_t *handler);
 
 //Close wrapper
 void Close(int fd);
+
+//Malloc wrapper
+void *Malloc(size_t size);
+
+//Pthread create wrapper
+void Pthread_create(pthread_t *tidp, pthread_attr_t *attrp, void * (*routine)(void *), void *argp);
+
+//Pthread detatch wrapper
+void Pthread_detach(pthread_t tid);
 
 #endif

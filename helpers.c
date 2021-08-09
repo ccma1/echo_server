@@ -116,6 +116,12 @@ void unix_error(char *msg) {
     exit(-1);
 }
 
+//Posix style error handling to display error message
+void posix_error(int code, char *msg)  {
+    fprintf(stderr, "%s: %s\n", msg, strerror(code));
+    exit(-1);
+}
+
 //Error-handling wrapper for fork
 pid_t Fork(void) {
     pid_t pid;
@@ -145,4 +151,30 @@ void Close(int fd) {
     
     if ((rc = close(fd)) < 0)
         unix_error("close error");
+}
+
+//Malloc wrapper
+void *Malloc(size_t size) {
+    void *p;
+
+    if ((p = malloc(size)) == NULL)
+        unix_error("Malloc error");
+    return p;
+}
+
+//Pthread create wrapper
+void Pthread_create(pthread_t *tidp, pthread_attr_t *attrp, void * (*routine)(void *), void *argp) 
+{
+    int rc;
+
+    if ((rc = pthread_create(tidp, attrp, routine, argp)) != 0)
+	    posix_error(rc, "Pthread_create error");
+}
+
+//Pthread detatch wrapper
+void Pthread_detach(pthread_t tid) {
+    int rc;
+
+    if ((rc = pthread_detach(tid)) != 0)
+        posix_error(rc, "Pthread_detatch error");
 }
