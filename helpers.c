@@ -200,3 +200,13 @@ void V(sem_t *sem)
     if (sem_post(sem) < 0)
 	    unix_error("V error");
 }
+
+//wrapper for select
+int Select(int  n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout) 
+{
+    int rc;
+
+    if ((rc = select(n, readfds, writefds, exceptfds, timeout)) < 0)
+	    unix_error("Select error");
+    return rc;
+}

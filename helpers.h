@@ -18,6 +18,8 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+#include <sys/select.h>
+
 /*constants */
 #define MAXLINE 8194
 #define LISTENQ 1024
@@ -71,6 +73,9 @@ void P(sem_t *sem);
 
 //wrapper for sem_post
 void V(sem_t *sem);
+
+//wrapper for select
+int Select(int  n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
 
 
 #endif
