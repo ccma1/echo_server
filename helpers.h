@@ -57,6 +57,12 @@ void Close(int fd);
 //Malloc wrapper
 void *Malloc(size_t size);
 
+//Calloc wrapper
+void *Calloc(size_t nmemb, size_t size);
+
+//Free wrapper
+void Free(void *ptr);
+
 //Pthread create wrapper
 void Pthread_create(pthread_t *tidp, pthread_attr_t *attrp, void * (*routine)(void *), void *argp);
 

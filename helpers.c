@@ -200,3 +200,19 @@ void V(sem_t *sem)
     if (sem_post(sem) < 0)
 	    unix_error("V error");
 }
+
+//wrapper for calloc
+void *Calloc(size_t nmemb, size_t size) 
+{
+    void *p;
+
+    if ((p = calloc(nmemb, size)) == NULL)
+	unix_error("Calloc error");
+    return p;
+}
+
+//wrapper for Free
+void Free(void *ptr) 
+{
+    free(ptr);
+}
