@@ -16,6 +16,7 @@
 #include <sys/wait.h>
 
 #include <pthread.h>
+#include <semaphore.h>
 
 /*constants */
 #define MAXLINE 8194
@@ -61,5 +62,15 @@ void Pthread_create(pthread_t *tidp, pthread_attr_t *attrp, void * (*routine)(vo
 
 //Pthread detatch wrapper
 void Pthread_detach(pthread_t tid);
+
+//wrapper for sem init
+void Sem_init(sem_t *sem, int pshared, unsigned int value); 
+
+//wrapper for sem_wait
+void P(sem_t *sem);
+
+//wrapper for sem_post
+void V(sem_t *sem);
+
 
 #endif

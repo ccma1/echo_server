@@ -178,3 +178,25 @@ void Pthread_detach(pthread_t tid) {
     if ((rc = pthread_detach(tid)) != 0)
         posix_error(rc, "Pthread_detatch error");
 }
+
+/**Wrappers for Posix semaphores */
+//wrapper for sem init
+void Sem_init(sem_t *sem, int pshared, unsigned int value) 
+{
+    if (sem_init(sem, pshared, value) < 0)
+	    unix_error("Sem_init error");
+}
+
+//wrapper for sem_wait
+void P(sem_t *sem) 
+{
+    if (sem_wait(sem) < 0)
+	    unix_error("P error");
+}
+
+//wrapper for sem_post
+void V(sem_t *sem) 
+{
+    if (sem_post(sem) < 0)
+	    unix_error("V error");
+}
