@@ -1,5 +1,5 @@
 /**
- * Concurrent echo server based on pthreads
+ * prethreaded concurrent echo server
  * mostly based on:
  * http://csapp.cs.cmu.edu/3e/ics3/code/src/csapp.c
  * to compile:
@@ -53,6 +53,7 @@ int main(int argc, char **argv){
         memset(client_port, 0, MAXLINE);
         sbuf_insert(&sbuf, connfd);
     }
+    sbuf_deinit(&sbuf);
     exit(0);
 }
 
