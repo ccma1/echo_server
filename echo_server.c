@@ -48,7 +48,7 @@ int main(int argc, char **argv){
                         fprintf(stderr, "getnameinfo error: %s\n", gai_strerror(rc));
                         exit(-1);
         }
-        printf("Connected to (%s, %s)\n", client_hostname, client_port);
+        printf("Connected to (%s, %s) on fd %d\n", client_hostname, client_port, *connfdp);
         //clear hostname and port info
         memset(client_hostname, 0, MAXLINE);
         memset(client_port, 0, MAXLINE);
@@ -94,6 +94,7 @@ void echo_all(int connfd) {
 void send_to_all(void) {
     for (int i = 0; i < LISTENQ; i++) {
         if (connfds[i] != 0) {
+            printf("sent %s to connfd %d at %i\n", buf, connfds[i], i);
             write(connfds[i], buf, MAXLINE);
         }
     }
@@ -104,6 +105,7 @@ void add_connfd(int connfd) {
     for (int i = 0; i < LISTENQ; i++) {
         if (connfds[i] == 0) {
             connfds[i] = connfd;
+            printf("connfd %d in %d\n", connfd, i);
             return;
         }
     }

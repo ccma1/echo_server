@@ -43,14 +43,14 @@ int main(int argc, char **argv)
         }
         //write(clientfd, "hello", 6);
         //memset(buf, 0, MAXLINE);
-        if ((n = read(clientfd, buf, strlen(buf))) < 0) {
+        if ((n = read(clientfd, buf, MAXLINE)) < 0) {
             fprintf(stderr, "ERROR reading from socket: %s\n",strerror(errno));
             exit(-1);
         } else if (n == 0) {
             fprintf(stderr, "Server disconnected\n");
             exit(-1);
         } else {
-            printf("Echo from server: %s\n", buf);
+            printf("Received %d bytes, Echo from server: (%s)\n", n, buf);
         }
     }
     Close(clientfd); 
